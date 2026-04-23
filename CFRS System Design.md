@@ -74,4 +74,238 @@ _CFRS is a fraud detection system designed for banking applications. It follows 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+**********************************ELK Stack***********************************
+
+
+
+**Elasticsearch**
+
+**Logstash**
+
+**Kibana**
+
+
+
+elasticsearch/config/elasticsearch.yml  ---->
+
+```
+network.host: 127.0.0.1
+http.port: 9200
+xpack.security.enabled: false
+discovery.type: single-node
+```
+▶️  Start Elasticsearch
+
+```
+cd elasticsearch/bin
+elasticsearch.bat
+```
+👉 Test:
+
+```
+http://localhost:9200
+```
+# ⚙️ Step 4: Configure Logstash
+Create file:
+
+C:\elk\logstash.conf
+
+
+
+```
+input {
+  tcp {
+    port => 5000
+    codec => json
+  }
+}
+
+output {
+  elasticsearch {
+    hosts => ["http://localhost:9200"]
+    index => "springboot-logs-%{+YYYY.MM.dd}"
+  }
+  stdout { codec => rubydebug }
+}
+```
+# ▶️ Step 5: Start Logstash
+```
+cd logstash/bin
+logstash -f C:\elk\logstash.conf
+```
+👉 It should show:
+
+```
+Successfully started Logstash
+```
+# ⚙️ Step 6: Configure Kibana
+Go to:
+
+```
+kibana/config/kibana.yml
+```
+Uncomment/set:
+
+```
+server.port: 5601
+elasticsearch.hosts: ["http://localhost:9200"]
+```
+# ▶️ Step 7: Start Kibana
+```
+cd kibana/bin
+kibana.bat
+```
+👉 Open:
+
+```
+http://localhost:5601
+```
+# 🧠 How they connect (simple view)
+```
+Spring Boot → Logstash → Elasticsearch → Kibana
+```
+-  Logstash listens on port **5000**
+-  Elasticsearch runs on **9200**
+-  Kibana runs on **5601**
+### Correct order (important)
+1.  Start **Elasticsearch**
+2.  Start **Logstash**
+3.  Start **Kibana**
+4.  Run your Spring Boot app
+
+
+
+
+# 🧩 Who does what in ELK?
+### 1️⃣ **Elasticsearch** → _Storage + Search Engine_
+👉 Think of it as:
+
+>  “Database for logs + super-fast search engine” 
+
+### What it does:
+-  Stores all logs 
+-  Indexes them (like Google search) 
+-  Lets you query/filter logs instantly
+
+
+
+
+### 2️⃣ **Logstash** → _Data Processor_
+👉 Think of it as:
+
+>  “Middleman + transformer” 
+
+### What it does:
+-  Receives logs from Spring Boot 
+-  Converts them into structured JSON 
+-  Can filter/modify data 
+-  Sends to Elasticsearch
+
+
+### 3️⃣ **Kibana** → _UI / Dashboard_
+👉 Think of it as:
+
+>  “Frontend for Elasticsearch” 
+
+### What it does:
+-  Shows logs in UI 
+-  Lets you search/filter 
+-  Create dashboards, charts, alerts 
+### Example:
+-  View all errors today 
+-  Graph: requests per minute 
+-  Filter: logs from one service
+
+
+
+
+************************Swagger Open AI ********************************
+
+I used Swagger (OpenAPI) to document APIs, added request/response schemas, handled error responses, secured it using JWT, and restricted access to admin users. I also disabled it in production using profiles.
+
+### How Swagger works internally?
+👉
+
+-  Reads annotations 
+-  Generates OpenAPI JSON (`/v3/api-docs` ) 
+-  UI renders it
+
+
+
+
+```
+springdoc.swagger-ui.enabled=false
+```
+### Why do we use Swagger?
+👉
+
+-  API documentation 
+-  Interactive testing 
+-  Helps frontend & QA teams
+
+
+What annotations have you used?
+
+
+
+👉 Common ones:
+
+
+
+```
+@Operation
+@ApiResponse
+@Schema
+@Parameter
+```
+7. How do you document request and response?
+
+```
+@Schema(description = "User name", example = "John")
+private String name;
+```
+8. How do you handle error responses in Swagger?
+
+```
+@ApiResponses({
+  @ApiResponse(responseCode = "404", description = "Not found")
+})
+```
+###  What annotations have you used?
+👉 Common ones:
+
+- `@Operation` 
+- `@ApiResponse` 
+- `@Schema` 
+- `@Parameter` 
+---
+
+### 7. How do you document request and response?
+```
+@Schema(description = "User name", example = "John")private String name;
+```
+---
+
+### 8. How do you handle error responses in Swagger?
+```
+@ApiResponses({  @ApiResponse(responseCode = "404", description = "Not found")})
+```
+---
+
+
+
+
+
 <!--- Eraser file: https://app.eraser.io/workspace/tGYgTNu2w53AyqgPnGgX --->
