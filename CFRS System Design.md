@@ -231,7 +231,7 @@ Spring Boot → Logstash → Elasticsearch → Kibana
 
 
 
-************************Swagger Open AI ********************************
+**************************Swagger Open AI** ********************************
 
 I used Swagger (OpenAPI) to document APIs, added request/response schemas, handled error responses, secured it using JWT, and restricted access to admin users. I also disabled it in production using profiles.
 
